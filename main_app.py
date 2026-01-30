@@ -6,7 +6,7 @@ import os
 import numpy as np
 import streamlit as st
 import cv2
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 
 # Config: must match training (Plant_Disease_Detection.ipynb)
 MODEL_PATH = os.environ.get("MODEL_PATH", "plant_disease_model.h5")
