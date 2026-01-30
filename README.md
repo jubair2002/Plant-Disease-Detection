@@ -1,80 +1,38 @@
 # Plant Disease Detection
 
-A CNN-based ML project for classifying plant leaf diseases (Tomato Bacterial Spot, Potato Early Blight, Corn Common Rust). Includes a Streamlit web app and Docker support.
+CNN-based plant leaf disease classification (Tomato Bacterial Spot, Potato Early Blight, Corn Common Rust). Streamlit app + Docker.
 
----
-
-## Project Structure
+## Structure
 
 ```
 Plant-Disease-Detection/
-├── main_app.py              # Streamlit web application
-├── plant_disease_model.h5   # Pre-trained Keras model (256×256 input)
-├── Plant_Disease_Detection.ipynb  # Notebook: data prep + training
+├── app/
+│   ├── main_app.py              # Streamlit app
+│   ├── plant_disease_model.h5   # Pre-trained model (256×256)
+│   ├── Plant_Disease_Detection.ipynb   # Training notebook
+│   └── test_images/             # Sample leaf images
 ├── requirements.txt
 ├── Dockerfile
-├── Test Image/              # Sample leaf images
+├── .gitignore
 └── README.md
 ```
 
----
+## Run locally
 
-## Quick Start (Local)
-
-### Prerequisites
-
-- Python 3.9+
-- pip
-
-### Run locally
+From repo root:
 
 ```bash
-git clone <your-repo-url>
-cd Plant-Disease-Detection
-
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-
 pip install -r requirements.txt
-streamlit run main_app.py
+streamlit run app/main_app.py
 ```
 
-Open **http://localhost:8501**, upload a leaf image, and get a prediction.
-
----
+Open http://localhost:8501
 
 ## Docker
 
-### Build and run with Docker
+From root Directory:
 
 ```bash
-# Build image
 docker build -t plant-disease-detection:latest .
-
-# Run container (port 8501)
 docker run -p 8501:8501 plant-disease-detection:latest
 ```
-
----
-
-## Model & Training
-
-- **Input**: RGB image, resized to **256×256**.
-- **Output**: One of:
-  - `Corn-Common_rust`
-  - `Potato-Early_blight`
-  - `Tomato-Bacterial_spot`
-- **Training**: See `Plant_Disease_Detection.ipynb` for data loading, CNN definition, training, and saving `plant_disease_model.h5`.
-
----
-
-## Requirements
-
-- **Python**: 3.9+
-- **Key packages**: TensorFlow/Keras, Streamlit, OpenCV, NumPy (see `requirements.txt`).
-
----
-
-## License
-
-Use and modify as needed for your project.

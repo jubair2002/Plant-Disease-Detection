@@ -10,13 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main_app.py .
-COPY plant_disease_model.h5 .
+COPY app/main_app.py .
+COPY app/plant_disease_model.h5 .
 
-# Streamlit default port
+ENV MODEL_PATH=/app/plant_disease_model.h5
+
 EXPOSE 8501
 
-# Non-root user
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
