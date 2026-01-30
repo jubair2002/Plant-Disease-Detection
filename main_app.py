@@ -1,42 +1,73 @@
-# Library imports
+"""
+Plant Disease Detection — Streamlit app.
+Predicts: Corn-Common_rust, Potato-Early_blight, Tomato-Bacterial_spot.
+"""
+import os
 import numpy as np
 import streamlit as st
 import cv2
 from keras.models import load_model
-import tensorflow as tf
 
-# Loading the Model
-model = load_model('plant_disease_model.h5')
-                    
-# Name of Classes
-CLASS_NAMES = ('Tomato-Bacterial_spot', 'Potato-Barly blight', 'Corn-Common_rust')
+# Config: must match training (Plant_Disease_Detection.ipynb)
+MODEL_PATH = os.environ.get("MODEL_PATH", "plant_disease_model.h5")
+IMG_SIZE = 256
+# Class order must match model output indices (training notebook)
+CLASS_NAMES = (
+    "Corn-Common_rust",
+    "Potato-Early_blight",
+    "Tomato-Bacterial_spot",
+)
 
-# Setting Title of App
-st.title("Plant Disease Detection")
-st.markdown("Upload an image of the plant leaf")
 
-# Uploading the dog image
-plant_image = st.file_uploader("Choose an image...", type = "jpg")
-submit = st.button('predict Disease')
+@st.cache_resource
+def load_predictor():
+    """Load model once and cache."""
+    if not os.path.isfile(MODEL_PATH):
+        raise FileNotFoundError(f"Model file not found: {MODEL_PATH}")
+    return load_model(MODEL_PATH)
 
-# On predict button click
-if submit:
-    if plant_image is not None:
-        # Convert the file to an opencv image.
-        file_bytes = np.asarray (bytearray(plant_image.read()), dtype = np.uint8)
-        opencv_image = cv2.imdecode(file_bytes, 1)
-        
-        # Displaying the image
-        st.image(opencv_image, channels="BGR")
-        st.write(opencv_image.shape)
-        
-        # Resizing the image
-        opencv_image = cv2.resize(opencv_image, (256, 256))
-        
-        # Convert image to 4 Dimension
-        opencv_image.shape = (1, 256, 256, 3)
-        
-        #Make Prediction
-        Y_pred = model.predict(opencv_image)
-        result = CLASS_NAMES[np.argmax(Y_pred)]
-        st.title(str("This is "+result.split('-')[0]+ " leaf with " +  result.split('-')[1]))
+
+def preprocess(image_bgr, size=(IMG_SIZE, IMG_SIZE)):
+    """Resize and shape for model: (1, H, W, 3)."""
+    resized = cv2.resize(image_bgr, size)
+    return resized.reshape(1, *size, 3)
+
+
+def main():
+    st.set_page_config(page_title="Plant Disease Detection", page_icon="🌱")
+    st.title("Plant Disease Detection")
+    st.markdown("Upload a leaf image to predict disease (Corn, Potato, Tomato).")
+
+    try:
+        model = load_predictor()
+    except FileNotFoundError as e:
+        st.error(str(e))
+        st.stop()
+
+    plant_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    submit = st.button("Predict disease")
+
+    if submit and plant_image is not None:
+        file_bytes = np.asarray(bytearray(plant_image.read()), dtype=np.uint8)
+        opencv_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        if opencv_image is None:
+            st.error("Could not decode image. Try another file.")
+            return
+
+        st.image(opencv_image, channels="BGR", use_container_width=True)
+
+        with st.spinner("Predicting..."):
+            X = preprocess(opencv_image)
+            Y_pred = model.predict(X, verbose=0)
+            idx = int(np.argmax(Y_pred[0]))
+            label = CLASS_NAMES[idx]
+            confidence = float(Y_pred[0][idx])
+
+        plant_name = label.split("-")[0]
+        disease_name = label.split("-", 1)[1].replace("_", " ")
+        st.success(f"This is a **{plant_name}** leaf with **{disease_name}**.")
+        st.caption(f"Confidence: {confidence:.2%}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,62 +1,80 @@
-# Plant 🌱 Disease 🐛 Detection 🔎
+# Plant Disease Detection
 
-Plant Disease Detection is an innovative machine learning project that harnesses the power of Convolutional Neural Networks (CNN) and deep learning techniques to identify and classify diseases in plants. The primary objective is to offer farmers and agricultural experts a valuable tool for swift plant health diagnosis, facilitating timely intervention and minimizing the risk of crop loss.
+A CNN-based ML project for classifying plant leaf diseases (Tomato Bacterial Spot, Potato Early Blight, Corn Common Rust). Includes a Streamlit web app and Docker support.
 
-[**Live Demo**](https://saurabhsinghdhami-plant-disease-detection-main-app-p8d5ks.streamlit.app/)
+---
 
-## Project Structure 📂
+## Project Structure
 
-The project comprises essential components:
-
-- `Plant_Disease_Detection.ipynb`: Jupyter Notebook with the code for model training.
-- `main_app.py`: Streamlit web application for plant disease prediction.
-- `plant_disease_model.h5`: Pre-trained model weights.
-- `requirements.txt`: List of necessary Python packages.
-
-## Installation 🚀
-
-To run the project locally, follow these steps:
-
-1. **Clone the repository:**
-
-```bash
-git clone https://github.com/SAURABHSINGHDHAMI/Plant-Disease-Detection.git
+```
+Plant-Disease-Detection/
+├── main_app.py              # Streamlit web application
+├── plant_disease_model.h5   # Pre-trained Keras model (256×256 input)
+├── Plant_Disease_Detection.ipynb  # Notebook: data prep + training
+├── requirements.txt
+├── Dockerfile
+├── Test Image/              # Sample leaf images
+└── README.md
 ```
 
-2. Navigate to the project directory:
+---
+
+## Quick Start (Local)
+
+### Prerequisites
+
+- Python 3.9+
+- pip
+
+### Run locally
 
 ```bash
+git clone <your-repo-url>
 cd Plant-Disease-Detection
-```
 
-3. **Install the required packages:**
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
-```bash
 pip install -r requirements.txt
-```
-
-4. **Run the Streamlit web application:**
-
-```bash
 streamlit run main_app.py
 ```
 
-## Usage 🌿
+Open **http://localhost:8501**, upload a leaf image, and get a prediction.
 
-Once the application is running, open your web browser and navigate to [http://localhost:8501](http://localhost:8501). Upload an image of a plant leaf, and the system will predict if it is affected by any disease.
+---
 
-## Model Training 🧠
+## Docker
 
-The model was trained using the `Plant_Disease_Detection.ipynb` notebook. It employs a Convolutional Neural Network architecture to classify plant images into different disease categories. The trained model weights are saved in `plant_disease_model.h5`.
+### Build and run with Docker
 
-## Web Application 🌐
+```bash
+# Build image
+docker build -t plant-disease-detection:latest .
 
-The web application (`main_app.py`) empowers users to interact with the trained model. Upload plant images, and the application provides real-time predictions regarding the health of the plant.
+# Run container (port 8501)
+docker run -p 8501:8501 plant-disease-detection:latest
+```
 
-## Requirements 🛠️
+---
 
-- Keras==2.8.0
-- numpy==1.21.4
-- streamlit==1.18.0
-- opencv-python-headless==4.5.3
-- tensorflow==2.7.0
+## Model & Training
+
+- **Input**: RGB image, resized to **256×256**.
+- **Output**: One of:
+  - `Corn-Common_rust`
+  - `Potato-Early_blight`
+  - `Tomato-Bacterial_spot`
+- **Training**: See `Plant_Disease_Detection.ipynb` for data loading, CNN definition, training, and saving `plant_disease_model.h5`.
+
+---
+
+## Requirements
+
+- **Python**: 3.9+
+- **Key packages**: TensorFlow/Keras, Streamlit, OpenCV, NumPy (see `requirements.txt`).
+
+---
+
+## License
+
+Use and modify as needed for your project.

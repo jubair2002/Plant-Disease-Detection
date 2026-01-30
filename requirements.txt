@@ -1,5 +1,6 @@
-keras
-numpy
-streamlit
-opencv_python_headless
-tensorflow
+# Core ML & app
+tensorflow>=2.10,<2.16
+keras>=2.10,<3
+numpy>=1.21,<2
+opencv-python-headless>=4.5,<5
+streamlit>=1.18,<2
